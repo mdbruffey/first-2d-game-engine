@@ -11,6 +11,7 @@ function setup() {
     c.mousePressed(function() {
         engine.createCircle(DEFAULT_RADIUS, mouseX, mouseY)
     });
+    engine.createCircle(50,WIDTH/2, HEIGHT/2, {fixed: true, color: "#808080"});
 }
 
 var lastUpdate = Date.now();
