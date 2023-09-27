@@ -35,6 +35,7 @@ class Engine{
 
     applyConstraints(dt){
         for (let body of this.bodies){
+            //bottom of the box
             let diff = body.position.y+body.radius - this.height;
             if (diff > 0){
                 let root = body.velocity.y**2 - 2*this.GRAVITY*diff;
@@ -42,7 +43,24 @@ class Engine{
                 let v1 = Math.sqrt(root);
                 body.position = new Vector(body.position.x, this.height-body.radius);
                 body.velocity = new Vector(body.velocity.x, -v1*body.restitution);
-                console.log(body.velocity);
+            }
+            //right side of the box
+            diff = body.position.x + body.radius - this.width;
+            if(diff > 0){
+                body.position = new Vector(this.width - body.radius, body.position.y);
+                body.velocity = new Vector(-body.velocity.x*body.restitution, body.velocity.y)
+            }
+            //left side of the box
+            diff = body.radius -  body.position.x;
+            if(diff > 0){
+                body.position = new Vector(body.radius, body.position.y);
+                body.velocity = new Vector(-body.velocity.x*body.restitution, body.velocity.y)
+            }
+            //top of the box
+            diff = body.radius - body.position.y;
+            if(diff > 0){
+                body.position = new Vector(body.position.x, body.radius);
+                body.velocity = new Vector(body.velocity.x, -body.velocity.y*body.restitution)
             }
         }
     }
@@ -61,11 +79,12 @@ class Engine{
                 if (dist < bodyA.radius + bodyB.radius){
                     let t = diff.mult(1/dist);
                     let delta = bodyA.radius + bodyB.radius - dist;
+                    let restitution = bodyA.restitution*bodyB.restitution
                     bodyA.position = bodyA.position.sum(t.mult(-0.5*delta));
                     bodyB.position = bodyB.position.sum(t.mult(0.5*delta));
 
-                    bodyA.velocity = bodyA.velocity.sum(t.mult(-dist));
-                    bodyB.velocity = bodyB.velocity.sum(t.mult(dist));
+                    bodyA.velocity = bodyA.velocity.sum(t.mult(-dist*restitution));
+                    bodyB.velocity = bodyB.velocity.sum(t.mult(dist*restitution));
                 }
             }
         }
