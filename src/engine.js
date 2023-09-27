@@ -16,6 +16,7 @@ class Engine{
             "velocity" : new Vector(0, 0),
             "acceleration" : new Vector(0, 0),
             "restitution" : .95,
+            "fixed" : false,
             "update" : bodyUpdate,
             "color" : "#FF0000",
             ...options
@@ -26,10 +27,12 @@ class Engine{
 
     step(dt){
         for (let body of this.bodies){
-            body.acceleration = new Vector(0, this.GRAVITY);
-            body.update(dt);
-            this.applyConstraints(dt);
-            this.checkCollisions();
+            if(!body.fixed){
+                body.acceleration = new Vector(0, this.GRAVITY);
+                body.update(dt);
+                this.applyConstraints(dt);
+                this.checkCollisions();
+            }
         }
     }
 
@@ -80,11 +83,15 @@ class Engine{
                     let t = diff.mult(1/dist);
                     let delta = bodyA.radius + bodyB.radius - dist;
                     let restitution = bodyA.restitution*bodyB.restitution
-                    bodyA.position = bodyA.position.sum(t.mult(-0.5*delta));
-                    bodyB.position = bodyB.position.sum(t.mult(0.5*delta));
+                    if(!bodyA.fixed){
+                        bodyA.position = bodyA.position.sum(t.mult(-0.5*delta));
+                        bodyA.velocity = bodyA.velocity.sum(t.mult(-dist*restitution));
+                    }
+                    if(!bodyB.fixed){
+                        bodyB.position = bodyB.position.sum(t.mult(0.5*delta));
+                        bodyB.velocity = bodyB.velocity.sum(t.mult(dist*restitution));
+                    }
 
-                    bodyA.velocity = bodyA.velocity.sum(t.mult(-dist*restitution));
-                    bodyB.velocity = bodyB.velocity.sum(t.mult(dist*restitution));
                 }
             }
         }
