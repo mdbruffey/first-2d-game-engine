@@ -13,6 +13,7 @@ class Engine{
             "radius" : radius,
             "position" : new Vector(x, y),
             "previousPosition" : new Vector(x, y),
+            "velocity" : new Vector(0,0),
             "acceleration" : new Vector(0, 0),
             "restitution" : 1,
             "update" : bodyUpdate,
@@ -35,17 +36,21 @@ class Engine{
         for (let body of this.bodies){
             let diff = body.position.y+body.radius - this.height;
             if (diff > 0){
-                let v2 = body.position.sum(body.previousPosition.mult(-1));
-                body.position = new Vector(body.position.x, this.height - body.radius - diff);
-                body.previousPosition = body.position.sum(v2.mult(body.restitution));
+                let v1y = Math.sqrt(body.velocity.y**2 - 2*this.GRAVITY*diff);
+                let t1 = (v1y-body.previousVelocity.y)/this.GRAVITY;
+                
+                body.position = new Vector(body.position.x, body.position.y - body.radius).sum(body.velocity.mult(t1-dt));
+                body.velocity = body.velocity.mult(-1).sum(body.acceleration.mult(dt-t1));
             }
         }
     }
 }
 
 var bodyUpdate = function(dt){
-    let velocity = this.position.sum(this.previousPosition.mult(-1));
+    //let velocity = this.position.sum(this.previousPosition.mult(-1));
     this.previousPosition = this.position;
-    this.position = this.position.sum(velocity).sum(this.acceleration.mult(dt*dt));
+    this.previousVelocity = this.velocity;
+    this.position = this.position.sum(this.velocity.mult(dt));
+    this.velocity = this.velocity.sum(this.acceleration.mult(dt));
     this.acceleration = new Vector(0,0);
 };
