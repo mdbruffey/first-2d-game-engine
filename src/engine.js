@@ -1,5 +1,6 @@
 class Engine{
     bodies;
+    GRAVITY = 981;
 
     constructor(width, height){
         this.height = height;
@@ -13,6 +14,7 @@ class Engine{
             "position" : new Vector(x, y),
             "previousPosition" : new Vector(x, y),
             "acceleration" : new Vector(0, 0),
+            "restitution" : 1,
             "update" : bodyUpdate,
             "color" : "#FF0000",
             ...options
@@ -23,17 +25,19 @@ class Engine{
 
     step(dt){
         for (let body of this.bodies){
-            body.acceleration = new Vector(0,981);
+            body.acceleration = new Vector(0, this.GRAVITY);
             body.update(dt);
-            this.applyConstraints();
+            this.applyConstraints(dt);
         }
     }
 
-    applyConstraints(){
+    applyConstraints(dt){
         for (let body of this.bodies){
-            let diff = this.height-body.position.y;
-            if (diff < body.radius){
-                body.position = new Vector (body.position.x, this.height-Math.abs(parseInt(body.position.y - body.previousPosition.y)) - body.radius);
+            let diff = body.position.y+body.radius - this.height;
+            if (diff > 0){
+                let v2 = body.position.sum(body.previousPosition.mult(-1));
+                body.position = new Vector(body.position.x, this.height - body.radius - diff);
+                body.previousPosition = body.position.sum(v2.mult(body.restitution));
             }
         }
     }
