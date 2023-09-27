@@ -29,6 +29,7 @@ class Engine{
             body.acceleration = new Vector(0, this.GRAVITY);
             body.update(dt);
             this.applyConstraints(dt);
+            this.checkCollisions();
         }
     }
 
@@ -40,8 +41,32 @@ class Engine{
                 if (root < 0 ) root = 0;
                 let v1 = Math.sqrt(root);
                 body.position = new Vector(body.position.x, this.height-body.radius);
-                body.velocity = new Vector(body.velocity.x, -v1).mult(body.restitution);
+                body.velocity = new Vector(body.velocity.x, -v1*body.restitution);
                 console.log(body.velocity);
+            }
+        }
+    }
+
+    checkCollisions(){
+        for (let i = 0; i < this.bodies.length; i++){
+            for (let j = 0; j < this.bodies.length; j++){
+                if (i === j) continue;
+
+                let bodyA = this.bodies[i];
+                let bodyB = this.bodies[j];
+
+                let diff = bodyB.position.sum(bodyA.position.mult(-1));
+                let dist = diff.length();
+
+                if (dist < bodyA.radius + bodyB.radius){
+                    let t = diff.mult(1/dist);
+                    let delta = bodyA.radius + bodyB.radius - dist;
+                    bodyA.position = bodyA.position.sum(t.mult(-0.5*delta));
+                    bodyB.position = bodyB.position.sum(t.mult(0.5*delta));
+
+                    bodyA.velocity = bodyA.velocity.sum(t.mult(-dist));
+                    bodyB.velocity = bodyB.velocity.sum(t.mult(dist));
+                }
             }
         }
     }
