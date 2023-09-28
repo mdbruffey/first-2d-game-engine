@@ -30,4 +30,9 @@ class Vector{
     dot(vec){
         return this.#x*vec.x + this.#y*vec.y
     }
+    //this is NOT a true cross-product; returns a scalar value representing 
+    //the magnitude of the cross-product in the z direction
+    cross(vec){
+        return this.#y*vec.x - this.#x*vec.y
+    }
 }
