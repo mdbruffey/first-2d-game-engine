@@ -91,6 +91,7 @@ class Engine{
                     else{
                         bodyA.position = bodyA.position.sum(n.mult(-delta));
                         let d = bodyA.velocity.mult(restitution)
+                        //Reflected velocity vector r = d - 2(d⋅n)n
                         bodyA.velocity = d.sum(n.mult(-2*d.dot(n)));
                     }
 
