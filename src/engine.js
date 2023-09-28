@@ -11,11 +11,12 @@ class Engine{
     createCircle(radius, x, y, options){
         let newCircle = {
             "radius" : radius,
+            "mass" : 1,
             "position" : new Vector(x, y),
             "previousPosition" : new Vector(x, y),
             "velocity" : new Vector(0, 0),
             "acceleration" : new Vector(0, 0),
-            "restitution" : .95,
+            "restitution" : 1,
             "fixed" : false,
             "update" : bodyUpdate,
             "color" : "#FF0000",
@@ -83,10 +84,12 @@ class Engine{
                     let restitution = bodyA.restitution*bodyB.restitution
                     
                     if(!bodyB.fixed){
+                        let  r = diff.mult(-(bodyA.radius/(bodyA.radius + bodyB.radius)));
+                        let j = -1*(1+restitution)*bodyA.velocity.dot(n)/(1/bodyA.mass + 1/bodyB.mass + (r.cross(n)**2) + (r.mult(-1).cross(n)**2))
                         bodyA.position = bodyA.position.sum(n.mult(-0.5*delta));
-                        bodyA.velocity = bodyA.velocity.sum(n.mult(-dist*restitution));
+                        bodyA.velocity = bodyA.velocity.sum(n.mult(j/bodyA.mass));
                         bodyB.position = bodyB.position.sum(n.mult(0.5*delta));
-                        bodyB.velocity = bodyB.velocity.sum(n.mult(dist*restitution));
+                        bodyB.velocity = bodyB.velocity.sum(n.mult(-j/bodyB.mass));
                     }
                     else{
                         bodyA.position = bodyA.position.sum(n.mult(-delta));
