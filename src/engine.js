@@ -78,19 +78,20 @@ class Engine{
                 let dist = diff.length();
 
                 if (dist < bodyA.radius + bodyB.radius){
-                    let t = diff.mult(1/dist);
+                    let n = diff.mult(1/dist);
                     let delta = bodyA.radius + bodyB.radius - dist;
                     let restitution = bodyA.restitution*bodyB.restitution
                     
                     if(!bodyB.fixed){
-                        bodyA.position = bodyA.position.sum(t.mult(-0.5*delta));
-                        bodyA.velocity = bodyA.velocity.sum(t.mult(-dist*restitution));
-                        bodyB.position = bodyB.position.sum(t.mult(0.5*delta));
-                        bodyB.velocity = bodyB.velocity.sum(t.mult(dist*restitution));
+                        bodyA.position = bodyA.position.sum(n.mult(-0.5*delta));
+                        bodyA.velocity = bodyA.velocity.sum(n.mult(-dist*restitution));
+                        bodyB.position = bodyB.position.sum(n.mult(0.5*delta));
+                        bodyB.velocity = bodyB.velocity.sum(n.mult(dist*restitution));
                     }
                     else{
-                        bodyA.position = bodyA.position.sum(t.mult(-delta));
-                        bodyA.velocity = t.mult(-bodyA.velocity.length()*restitution);
+                        bodyA.position = bodyA.position.sum(n.mult(-delta));
+                        let d = bodyA.velocity.mult(restitution)
+                        bodyA.velocity = d.sum(n.mult(-2*d.dot(n)));
                     }
 
                 }
