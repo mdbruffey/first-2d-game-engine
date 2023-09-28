@@ -26,4 +26,8 @@ class Vector{
     get y() {
         return this.#y;
     }
+
+    dot(vec){
+        return this.#x*vec.x + this.#y*vec.y
+    }
 }
