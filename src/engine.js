@@ -48,20 +48,17 @@ class Engine{
                 body.velocity = new Vector(body.velocity.x, -v1*body.restitution);
             }
             //right side of the box
-            diff = body.position.x + body.radius - this.width;
-            if(diff > 0){
+            if(body.position.x + body.radius > this.width){
                 body.position = new Vector(this.width - body.radius, body.position.y);
                 body.velocity = new Vector(-body.velocity.x*body.restitution, body.velocity.y)
             }
             //left side of the box
-            diff = body.radius -  body.position.x;
-            if(diff > 0){
+            if(body.position.x < body.radius){
                 body.position = new Vector(body.radius, body.position.y);
                 body.velocity = new Vector(-body.velocity.x*body.restitution, body.velocity.y)
             }
             //top of the box
-            diff = body.radius - body.position.y;
-            if(diff > 0){
+            if(body.position.y < body.radius){
                 body.position = new Vector(body.position.x, body.radius);
                 body.velocity = new Vector(body.velocity.x, -body.velocity.y*body.restitution)
             }
