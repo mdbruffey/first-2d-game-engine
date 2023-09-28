@@ -67,6 +67,7 @@ class Engine{
 
     checkCollisions(){
         for (let i = 0; i < this.bodies.length; i++){
+            if (this.bodies[i].fixed) continue;
             for (let j = 0; j < this.bodies.length; j++){
                 if (i === j) continue;
 
@@ -80,13 +81,16 @@ class Engine{
                     let t = diff.mult(1/dist);
                     let delta = bodyA.radius + bodyB.radius - dist;
                     let restitution = bodyA.restitution*bodyB.restitution
-                    if(!bodyA.fixed){
+                    
+                    if(!bodyB.fixed){
                         bodyA.position = bodyA.position.sum(t.mult(-0.5*delta));
                         bodyA.velocity = bodyA.velocity.sum(t.mult(-dist*restitution));
-                    }
-                    if(!bodyB.fixed){
                         bodyB.position = bodyB.position.sum(t.mult(0.5*delta));
                         bodyB.velocity = bodyB.velocity.sum(t.mult(dist*restitution));
+                    }
+                    else{
+                        bodyA.position = bodyA.position.sum(t.mult(-delta));
+                        bodyA.velocity = t.mult(-bodyA.velocity.length()*restitution);
                     }
 
                 }
