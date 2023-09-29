@@ -85,7 +85,9 @@ class Engine{
                     
                     if(!bodyB.fixed){
                         let  r = diff.mult(-(bodyA.radius/(bodyA.radius + bodyB.radius)));
-                        let j = -1*(1+restitution)*bodyA.velocity.dot(n)/(1/bodyA.mass + 1/bodyB.mass + (r.cross(n)**2) + (r.mult(-1).cross(n)**2))
+                        let Ia = 2/5*bodyA.mass * bodyA.radius**2;
+                        let Ib = 2/5*bodyB.mass * bodyB.radius**2;
+                        let j = -1*(1+restitution)*bodyA.velocity.dot(n)/(1/bodyA.mass + 1/bodyB.mass + (r.cross(n)**2)/Ia + (r.mult(-1).cross(n)**2)/Ib)
                         bodyA.position = bodyA.position.sum(n.mult(-0.5*delta));
                         bodyA.velocity = bodyA.velocity.sum(n.mult(j/bodyA.mass));
                         bodyB.position = bodyB.position.sum(n.mult(0.5*delta));
